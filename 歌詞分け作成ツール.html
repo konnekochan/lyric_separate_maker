@@ -1,0 +1,120 @@
+<!doctype html><html lang="ja"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>歌詞分けメーカー</title><style>
+:root{font-family:system-ui,'Yu Gothic',sans-serif;color:#17233b;background:#edf1f7}*{box-sizing:border-box}body{margin:0;overflow:hidden}.app{padding:10px;max-width:1800px;margin:auto;height:100dvh;display:flex;flex-direction:column;min-height:0}h1{font-size:19px;margin:0 0 7px;flex-shrink:0}.layout{display:grid;grid-template-columns:minmax(380px,42%) minmax(0,1fr);gap:10px;flex:1;min-height:0}.panel{background:white;border-radius:12px;padding:11px;min-height:0;overflow:hidden;box-shadow:0 2px 12px #18294712}h2{font-size:15px;margin:0 0 10px}label{font-size:12px;font-weight:700;display:block;margin:8px 0 4px}input,textarea,select{border:1px solid #cbd3df;border-radius:6px;padding:8px;font:inherit;width:100%}textarea{height:105px;min-height:70px;resize:none}button{border:0;border-radius:7px;padding:8px 12px;background:#275fc6;color:white;cursor:pointer;font-weight:700}button.secondary{background:#e8edf5;color:#20344e}button.danger{background:#fff0f0;color:#b42d36}.row{display:flex;gap:7px;align-items:center}.row>*{min-width:0}.row input{flex:1}.members{display:grid;gap:6px}.member{display:flex;gap:5px}.member input:first-child{width:58px}.member input:nth-child(2){flex:1}.member button{padding:6px}.lyrics{height:100%;min-height:0;overflow:auto;border:1px solid #dce2eb;border-radius:8px;padding:7px}.line{display:grid;grid-template-columns:1fr;gap:5px;padding:7px;border-bottom:1px solid #e7ebf1}.line .words{font-size:13px;overflow-wrap:anywhere}.chips{display:flex;flex-wrap:wrap;gap:4px}.chip{background:#e9edf5;color:#293c57;border:1px solid transparent;padding:4px 7px;font-size:12px}.chip.active{background:#d4e8ff;border-color:#2670ce}.tools{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.preview{background:#f2f3f5;padding:8px;border-radius:8px;overflow:auto;flex:1;min-height:0;display:flex;align-items:flex-start;justify-content:center}canvas{display:block;max-width:100%;width:auto;max-height:100%;height:auto;object-fit:contain;box-shadow:0 1px 7px #0002;background:white}.settings{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 10px}.settings input[type=color]{height:37px;padding:3px}.status{font-size:12px;color:#476481;min-height:18px;margin-top:8px}
+#lyricsInput #source{height:auto;min-height:0;flex:1;resize:none}.editor{display:flex;flex-direction:column;min-height:0}.editor .tab-content{display:none;min-height:0;flex:1;overflow:hidden;flex-direction:column;gap:7px}.editor .tab-content.active{display:flex}.editor hr{margin:4px 0;border:0;border-top:1px solid #e1e6ed}.tabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px}.tabs button{padding:6px 9px;font-size:12px}.tabs button.active{background:#275fc6;color:white}.tabs button:not(.active){background:#e8edf5;color:#20344e}.empty-hint{font-size:12px;color:#64748b;padding:10px;background:#f6f8fb;border-radius:7px}.members{overflow:auto;min-height:0;align-content:start}.editor .settings{overflow:auto}.preview-panel{display:flex;flex-direction:column;min-height:0}.preview-panel h2{flex-shrink:0}.row{flex-shrink:0}.tools{flex-shrink:0}@media(max-width:700px){.layout{grid-template-columns:minmax(0,1fr)}.preview-panel{display:none}.app{padding:7px}.editor{width:100%}}
+
+</style></head><body><div class="app"><h1>🎼 歌詞分けメーカー</h1><div class="layout"><section class="panel editor"><div class="tabs"><button class="active" data-tab="lyricsInput">① 歌詞</button><button data-tab="memberInput">② 担当者</button><button data-tab="partInput">③ パート分け</button><button data-tab="imageInput">④ 出力設定</button></div><div class="tab-content active" id="lyricsInput"><h2>曲情報・歌詞</h2><div class="row"><input id="title" placeholder="曲名"><input id="artist" placeholder="アーティスト名"></div><label>歌詞（1行＝1パート／空行＝段落区切り）</label><textarea id="source" placeholder="ここに歌詞を貼り付けます"></textarea><div class="row"><button id="apply">歌詞を反映</button></div></div><div class="tab-content" id="memberInput"><h2>担当者・絵文字登録（自動保存）</h2><div class="members" id="members"></div><button id="addMember" class="secondary" style="margin-top:8px">＋ 担当者追加</button></div><div class="tab-content" id="partInput"><h2>行ごとの担当者を選択</h2><div class="lyrics" id="lines"></div></div><div class="tab-content" id="imageInput"><h2>画像設定</h2><div class="settings"><div><label>列数</label><select id="columns"><option value="2">2列</option><option value="1">1列</option></select></div><div><label>画像比率</label><select id="aspect"><option value="square">1:1（正方形・固定）</option></select></div><div><label>文字サイズ</label><input id="fontSize" type="number" min="16" max="52" value="25"></div><div><label>背景色</label><input id="bg" type="color" value="#ffffff"></div><div><label>文字色</label><input id="fg" type="color" value="#101a36"></div><div><label>画像幅（px）</label><input id="imageWidth" type="number" min="700" max="4000" value="1600"></div><div><label>行間倍率</label><input id="lineHeight" type="number" min="1.1" max="3" step="0.1" value="1.5"></div></div><hr><div class="tools"><button id="copy">歌詞分けをコピー</button><button id="png">PNG画像を保存</button><button id="save" class="secondary">設定をJSON保存</button><button id="load" class="secondary">設定を読み込む</button></div><input type="file" id="file" accept="application/json" hidden><div class="status" id="status"></div></div></section><section class="panel preview-panel"><h2>プレビュー（右上に担当者一覧を表示）</h2><div class="preview"><canvas id="canvas"></canvas></div></section></div></div><script>
+'use strict';
+const $=id=>document.getElementById(id);const defaults=[['🩵','こん猫'],['❤️','ぬん'],['💛','猫田'],['🩷','ぷり'],['💙','しゃあろっく'],['🖤','あるゑ'],['💌','全員']];let members=readMembers();let lines=[];let assignments=[];
+const MEMBER_KEY='lyric-maker-members-v2';
+function readMembers(){try{const saved=JSON.parse(localStorage.getItem(MEMBER_KEY));return Array.isArray(saved)?saved.filter(m=>m&&typeof m.emoji==='string'&&typeof m.name==='string'):[]}catch{return []}}
+function persistMembers(){try{localStorage.setItem(MEMBER_KEY,JSON.stringify(members))}catch{notify('ブラウザの保存機能を利用できません。設定をJSONで保存してください')}}
+function notify(s){$('status').textContent=s}function renderMembers(){let root=$('members');root.replaceChildren();if(!members.length){let hint=document.createElement('div');hint.className='empty-hint';hint.textContent='登録はありません。「＋ 担当者追加」から登録してください。';root.append(hint)}members.forEach((m,i)=>{let row=document.createElement('div');row.className='member';let emoji=document.createElement('input');emoji.value=m.emoji;emoji.title='絵文字';emoji.addEventListener('input',()=>{m.emoji=emoji.value;persistMembers();renderLines();draw()});let name=document.createElement('input');name.value=m.name;name.placeholder='担当者名';name.addEventListener('input',()=>{m.name=name.value;persistMembers();renderLines();draw()});let del=document.createElement('button');del.className='danger';del.textContent='×';del.onclick=()=>{members.splice(i,1);assignments=assignments.map(a=>a.filter(n=>n!==i).map(n=>n>i?n-1:n));persistMembers();renderMembers();renderLines();draw()};row.append(emoji,name,del);root.append(row)})}
+function renderLines(){let root=$('lines');root.replaceChildren();lines.forEach((line,i)=>{let el=document.createElement('div');el.className='line';let words=document.createElement('div');words.className='words';words.textContent=(i+1)+'. '+(line||'── 段落区切り ──');el.append(words);if(line){let chips=document.createElement('div');chips.className='chips';members.forEach((m,j)=>{let b=document.createElement('button');b.className='chip'+(assignments[i]?.includes(j)?' active':'');b.textContent=m.emoji+' '+m.name;b.onclick=()=>{let a=assignments[i]||[];assignments[i]=a.includes(j)?a.filter(x=>x!==j):[...a,j].sort((x,y)=>x-y);renderLines();draw()};chips.append(b)});el.append(chips)}root.append(el)})}
+function applyLyrics(){let old=lines;let next=$('source').value.replace(/\r/g,'').split('\n');while(next.length&&next[next.length-1]==='')next.pop();let keep=old.length===next.length&&old.every((x,i)=>x===next[i]);lines=next;assignments=keep?assignments:next.map(()=>[]);renderLines();draw();notify('歌詞を反映しました')}
+function exportText(){return lines.map((line,i)=>line?'('+((assignments[i]||[]).map(j=>members[j]?.emoji||'').join(''))+')'+line:'').join('\n')}
+function rounded(ctx,x,y,w,h,r){ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.stroke()}
+function draw(){
+    const c=$('canvas'),ctx=c.getContext('2d');
+    const W=Math.max(700,Math.min(4000,+$('imageWidth').value||1600));
+    const square=true;
+    const requestedFont=Math.max(16,Math.min(52,+$('fontSize').value||25));
+    const cols=+$('columns').value,bg=$('bg').value,fg=$('fg').value;
+    const pad=Math.round(W*.055),gap=55,colW=(W-2*pad-gap*(cols-1))/cols;
+    const title=$('title').value||'曲名未設定',artist=$('artist').value;
+    const headerY=pad+62;
+    const legendW=Math.min(390,W*.33),legendCols=members.length>5?2:1;
+    const legendRows=Math.ceil(members.length/legendCols);
+    const legendH=legendRows*34+36;
+    const startY=Math.max(headerY+95,pad+legendH+32);
+    const fontFamily="'Yu Mincho','Hiragino Mincho ProN',serif";
+    function layout(font){
+        const lineH=Math.ceil(font*(+$('lineHeight').value||1.5));
+        const blocks=[];
+        ctx.font=`${font}px ${fontFamily}`;
+        // 全行で同じ歌詞開始位置を使い、複数人の絵文字領域を確保する。
+        const prefixFont=`${font}px sans-serif`;
+        ctx.font=prefixFont;
+        const prefixes=lines.map((line,i)=>line?'('+((assignments[i]||[]).map(j=>members[j]?.emoji||'').join(''))+')':'');
+        const maxPrefixWidth=Math.max(font*2.4,...prefixes.map(p=>ctx.measureText(p).width));
+        const indent=Math.min(colW-font*2.5,Math.ceil(maxPrefixWidth+font*.85));
+        ctx.font=`${font}px ${fontFamily}`;
+        for(let i=0;i<lines.length;i++){
+            const line=lines[i];
+            if(!line){blocks.push({separator:true,h:lineH*.85});continue}
+            const prefix=prefixes[i];
+            const available=Math.max(font*2,colW-indent-8);
+            const texts=[];let part='';
+            for(const ch of [...line]){
+                if(ctx.measureText(part+ch).width>available&&part){texts.push(part);part=ch}
+                else part+=ch;
+            }
+            if(part)texts.push(part);
+            blocks.push({prefix,texts,indent,h:Math.max(lineH,texts.length*lineH+5)});
+        }
+        const target=blocks.reduce((n,b)=>n+b.h,0)/cols;
+        const groups=Array.from({length:cols},()=>[]);
+        let index=0,sum=0;
+        for(const block of blocks){
+            if(index<cols-1&&sum>=target&&groups[index].length){index++;sum=0}
+            groups[index].push(block);sum+=block.h;
+        }
+        const contentH=Math.max(0,...groups.map(g=>g.reduce((n,b)=>n+b.h,0)));
+        return {font,lineH,groups,contentH};
+    }
+    let result=layout(requestedFont);
+    if(square){
+        // Reduce text size only as needed to fit within the square canvas.
+        for(let size=requestedFont;size>=9;size-=.5){
+            const candidate=layout(size);
+            result=candidate;
+            if(startY+candidate.contentH+pad+35<=W)break;
+        }
+    }
+    const {font,lineH,groups,contentH}=result;
+    const H=W;
+    c.width=W;c.height=H;
+    // Always keep all content inside the square, even for very long lyrics.
+    const neededHeight=startY+contentH+pad+35;
+    const scale=Math.min(1,W/neededHeight);
+    ctx.save();
+    ctx.translate((W-W*scale)/2,0);
+    ctx.scale(scale,scale);
+    ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+    ctx.fillStyle=fg;ctx.textBaseline='middle';ctx.textAlign='center';
+    ctx.font=`${Math.round(font*2.6)}px Georgia,serif`;
+    ctx.fillText(title,W/2,headerY,Math.max(100,W-legendW-pad*3));
+    ctx.font=`${Math.round(font*.85)}px Georgia,serif`;
+    ctx.fillText(artist,W/2,headerY+55);
+    ctx.strokeStyle=fg;ctx.globalAlpha=.4;ctx.beginPath();
+    ctx.moveTo(W*.35,headerY+83);ctx.lineTo(W*.65,headerY+83);ctx.stroke();ctx.globalAlpha=1;
+    if(members.length){
+        const lx=W-pad-legendW,ly=pad/2,legendFont=Math.max(17,font*.8);
+        ctx.lineWidth=1.5;ctx.strokeStyle='#9b8c84';rounded(ctx,lx,ly,legendW,legendH,10);
+        ctx.textAlign='left';ctx.fillStyle=fg;ctx.font=`${legendFont}px sans-serif`;
+        members.forEach((m,i)=>{
+            const column=Math.floor(i/legendRows),r=i%legendRows;
+            const x=lx+18+column*(legendW/legendCols),y=ly+27+r*34;
+            ctx.fillText(m.emoji,x,y);
+            ctx.fillText(m.name,x+legendFont*1.8,y,legendW/legendCols-legendFont*2.3);
+        });
+    }
+    ctx.font=`${font}px ${fontFamily}`;
+    groups.forEach((group,k)=>{
+        const x=pad+k*(colW+gap);let y=startY;
+        group.forEach(b=>{
+            if(b.separator){ctx.strokeStyle='#b9a9a3';ctx.beginPath();ctx.moveTo(x,y+b.h/2);ctx.lineTo(x+colW,y+b.h/2);ctx.stroke();y+=b.h;return}
+            ctx.textAlign='left';ctx.fillStyle=fg;
+            ctx.font=`${font}px sans-serif`;
+            ctx.fillText(b.prefix,x,y+lineH/2);
+            ctx.font=`${font}px ${fontFamily}`;
+            b.texts.forEach((t,j)=>ctx.fillText(t,x+b.indent,y+lineH/2+j*lineH));
+            y+=b.h;
+        });
+    });
+    ctx.restore();
+    if(scale<0.65)notify('1:1で全歌詞を収めるため文字を縮小しました。読みやすさを優先する場合は歌詞を分割してください。');
+}
+
+function download(blob,name){let url=URL.createObjectURL(blob);let a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),3000)}
+document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-tab]').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.tab-content').forEach(x=>x.classList.toggle('active',x.id===b.dataset.tab))});$('apply').onclick=()=>{applyLyrics();document.querySelector('[data-tab=partInput]').click()};$('addMember').onclick=()=>{members.push({emoji:'',name:''});persistMembers();renderMembers();renderLines();draw()};$('copy').onclick=async()=>{let text=exportText();try{await navigator.clipboard.writeText(text);notify('コピーしました')}catch{let a=document.createElement('textarea');a.value=text;document.body.append(a);a.select();document.execCommand('copy');a.remove();notify('コピーしました')}};$('png').onclick=()=>$('canvas').toBlob(b=>b&&download(b,($('title').value||'歌詞分け')+'.png'),'image/png');$('save').onclick=()=>{let settings={members,lines,assignments,options:Object.fromEntries(['title','artist','columns','aspect','fontSize','bg','fg','imageWidth','lineHeight'].map(id=>[id,$(id).value]))};download(new Blob([JSON.stringify(settings,null,2)],{type:'application/json'}),'歌詞分け設定.json')};$('load').onclick=()=>$('file').click();$('file').onchange=async e=>{try{let data=JSON.parse(await e.target.files[0].text());if(!Array.isArray(data.members)||!Array.isArray(data.lines))throw Error('形式が異なります');members=data.members;persistMembers();lines=data.lines;assignments=data.assignments||lines.map(()=>[]);$('source').value=lines.join('\n');Object.entries(data.options||{}).forEach(([k,v])=>{if($(k))$(k).value=v});renderMembers();renderLines();draw();notify('設定を読み込みました')}catch(err){notify('読み込み失敗: '+err.message)}e.target.value=''};['title','artist','columns','aspect','fontSize','bg','fg','imageWidth','lineHeight'].forEach(id=>$(id).addEventListener('input',draw));renderMembers();renderLines();draw();
+</script></body></html>
